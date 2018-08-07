@@ -3,4 +3,6 @@
 *.pyc
 
 .settings
+.classpath
+
 bin
