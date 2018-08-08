@@ -18,12 +18,13 @@ import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends TimedRobot {
 
-	static private double WHEEL_DIAMETER = 0.5;
+	static private double WHEEL_DIAMETER = 0.531;
 	static private double ENCODER_PULSE_PER_REV = 360;
 
 	Joystick stick;
@@ -45,18 +46,17 @@ public class Robot extends TimedRobot {
 
 		stick = new Joystick(0);
 
-		Spark leftFrontMotor = new Spark(1);
+		Victor leftFrontMotor = new Victor(3);
 		leftFrontMotor.setInverted(false);
 
-		Spark rightFrontMotor = new Spark(2);
+		Victor rightFrontMotor = new Victor(0);
 		rightFrontMotor.setInverted(false);
+		
+		Victor leftRearMotor = new Victor(2);
+		leftFrontMotor.setInverted(false);
 
-		Spark leftRearMotor = new Spark(3);
-		leftRearMotor.setInverted(false);
-
-		Spark rightRearMotor = new Spark(4);
-		rightRearMotor.setInverted(false);
-
+		Victor rightRearMotor = new Victor(1);
+		rightFrontMotor.setInverted(false);
 		
 		//
 		// Configure drivetrain movement
@@ -76,12 +76,12 @@ public class Robot extends TimedRobot {
 		
 		double encoderConstant = (1 / ENCODER_PULSE_PER_REV) * WHEEL_DIAMETER * Math.PI;
 
-		Encoder leftEncoder = new Encoder(0, 1);
-		leftEncoder.setDistancePerPulse(encoderConstant);
+		Encoder leftEncoder = new Encoder(8, 9);
+		leftEncoder.setDistancePerPulse(-encoderConstant);
 		leftEncoderPosition = leftEncoder::getDistance;
 		leftEncoderRate = leftEncoder::getRate;
 
-		Encoder rightEncoder = new Encoder(0, 1);
+		Encoder rightEncoder = new Encoder(6, 7);
 		rightEncoder.setDistancePerPulse(encoderConstant);
 		rightEncoderPosition = rightEncoder::getDistance;
 		rightEncoderRate = rightEncoder::getRate;
@@ -89,7 +89,7 @@ public class Robot extends TimedRobot {
 		
 		// Set the update rate instead of using flush because of a ntcore bug
 		// -> probably don't want to do this on a robot in competition
-		NetworkTableInstance.getDefault().setUpdateRate(0.010);
+//		NetworkTableInstance.getDefault().setUpdateRate(0.010);
 	}
 
 	@Override
@@ -138,38 +138,38 @@ public class Robot extends TimedRobot {
 	public void autonomousPeriodic() {
 
 		// Retrieve values to send back before telling the motors to do something
-		double now = Timer.getFPGATimestamp();
-
-		double leftPosition = leftEncoderPosition.get();
-		double leftRate = leftEncoderRate.get();
-
-		double rightPosition = rightEncoderPosition.get();
-		double rightRate = rightEncoderRate.get();
-
-		double battery = RobotController.getBatteryVoltage();
-		double motorVolts = battery * Math.abs(priorAutospeed);
-
-		double leftMotorVolts = motorVolts;
-		double rightMotorVolts = motorVolts;
-
-		// Retrieve the commanded speed from NetworkTables
-		double autospeed = autoSpeedEntry.getDouble(0);
-		priorAutospeed = autospeed;
-
-		// command motors to do things
-		drive.tankDrive(autospeed, autospeed, false);
-
-		// send telemetry data array back to NT
-		numberArray[0] = now;
-		numberArray[1] = battery;
-		numberArray[2] = autospeed;
-		numberArray[3] = leftMotorVolts;
-		numberArray[4] = rightMotorVolts;
-		numberArray[5] = leftPosition;
-		numberArray[6] = leftRate;
-		numberArray[7] = rightPosition;
-		numberArray[8] = rightRate;
-
-		telemetryEntry.setNumberArray(numberArray);
+//		double now = Timer.getFPGATimestamp();
+//
+//		double leftPosition = leftEncoderPosition.get();
+//		double leftRate = leftEncoderRate.get();
+//
+//		double rightPosition = rightEncoderPosition.get();
+//		double rightRate = rightEncoderRate.get();
+//
+//		double battery = RobotController.getBatteryVoltage();
+//		double motorVolts = battery * Math.abs(priorAutospeed);
+//
+//		double leftMotorVolts = motorVolts;
+//		double rightMotorVolts = motorVolts;
+//
+//		// Retrieve the commanded speed from NetworkTables
+//		double autospeed = autoSpeedEntry.getDouble(0);
+//		priorAutospeed = autospeed;
+//
+//		// command motors to do things
+//		drive.tankDrive(autospeed, autospeed, false);
+//
+//		// send telemetry data array back to NT
+//		numberArray[0] = now;
+//		numberArray[1] = battery;
+//		numberArray[2] = autospeed;
+//		numberArray[3] = leftMotorVolts;
+//		numberArray[4] = rightMotorVolts;
+//		numberArray[5] = leftPosition;
+//		numberArray[6] = leftRate;
+//		numberArray[7] = rightPosition;
+//		numberArray[8] = rightRate;
+//
+//		telemetryEntry.setNumberArray(numberArray);
 	}
 }
